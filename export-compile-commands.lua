@@ -21,9 +21,23 @@ function m.getIncludeDirs(cfg)
   return flags
 end
 
-function m.getCommonFlags(cfg)
+function m.getStandard(prj)
+  local flags = {}
+  for k,v in ipairs(prj.flags or {}) do
+    if v == "C++11" then
+      table.insert(flags, "-std=c++11")
+    elseif v == "C++14" then
+      table.insert(flags, "-std=c++14")
+    end
+  end
+  return flags
+end
+
+function m.getCommonFlags(prj, cfg)
   local toolset = m.getToolset(cfg)
   local flags = toolset.getcppflags(cfg)
+
+  flags = table.join(flags, m.getStandard(prj))
   flags = table.join(flags, toolset.getdefines(cfg.defines))
   flags = table.join(flags, toolset.getundefines(cfg.undefines))
   -- can't use toolset.getincludedirs because some tools that consume
@@ -42,7 +56,7 @@ function m.getDependenciesPath(prj, cfg, node)
 end
 
 function m.getFileFlags(prj, cfg, node)
-  return table.join(m.getCommonFlags(cfg), {
+  return table.join(m.getCommonFlags(prj, cfg), {
     '-o', m.getObjectPath(prj, cfg, node),
     '-MF', m.getDependenciesPath(prj, cfg, node),
     '-c', node.abspath
