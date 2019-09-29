@@ -75,10 +75,17 @@ function m.getFileFlags(prj, cfg, node)
 end
 
 function m.generateCompileCommand(prj, cfg, node)
+  local toolset = m.getToolset(cfg)
+  if project.iscpp(prj) then
+    command = toolset.tools['cxx']
+  else
+    command = toolset.tools['cc']
+  end
+
   return {
     directory = prj.location,
     file = node.abspath,
-    command = (path.iscfile(node.abspath) and 'cc ' or 'c++ ') .. table.concat(m.getFileFlags(prj, cfg, node), ' ')
+    command = command .. ' '.. table.concat(m.getFileFlags(prj, cfg, node), ' ')
   }
 end
 
