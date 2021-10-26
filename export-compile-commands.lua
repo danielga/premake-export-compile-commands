@@ -38,7 +38,7 @@ end
 function m.getCommonFlags(prj, cfg)
   -- some tools that consumes compile_commands.json have problems with relative include paths
   relative = project.getrelative
-  project.getrelative = function(prj, dir) return dir end
+  project.getrelative = function(_, dir) return dir end
 
   local toolset = m.getToolset(cfg)
   local flags = toolset.getcppflags(cfg)
@@ -85,7 +85,7 @@ function m.generateCompileCommand(prj, cfg, node)
   return {
     directory = prj.location,
     file = node.abspath,
-    command = command .. ' '.. table.concat(m.getFileFlags(prj, cfg, node), ' ')
+    command = command .. ' ' .. table.concat(m.getFileFlags(prj, cfg, node), ' ')
   }
 end
 
@@ -120,7 +120,7 @@ function m.onWorkspace(wks)
   end
   for cfgKey,cmds in pairs(cfgCmds) do
     local outfile = string.format('%s/compile_commands.json', cfgKey)
-    p.generate(wks, outfile, function(wks)
+    p.generate(wks, outfile, function()
       p.push('[')
       for i = 1, #cmds do
         local item = cmds[i]
