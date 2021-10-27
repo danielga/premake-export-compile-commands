@@ -3,7 +3,6 @@ local p = premake
 p.modules.export_compile_commands = {}
 local m = p.modules.export_compile_commands
 
-local workspace = p.workspace
 local project = p.project
 
 function m.getToolset(cfg)
@@ -37,7 +36,7 @@ end
 
 function m.getCommonFlags(prj, cfg)
   -- some tools that consumes compile_commands.json have problems with relative include paths
-  relative = project.getrelative
+  local relative = project.getrelative
   project.getrelative = function(_, dir) return dir end
 
   local toolset = m.getToolset(cfg)
@@ -76,6 +75,7 @@ end
 
 function m.generateCompileCommand(prj, cfg, node)
   local toolset = m.getToolset(cfg)
+  local command
   if project.iscpp(prj) then
     command = toolset.tools['cxx']
   else
@@ -98,10 +98,9 @@ function m.getProjectCommands(prj, cfg)
   local cmds = {}
   p.tree.traverse(tr, {
     onleaf = function(node, depth)
-      if not m.includeFile(prj, node, depth) then
-        return
+      if m.includeFile(prj, node, depth) then
+        table.insert(cmds, m.generateCompileCommand(prj, cfg, node))
       end
-      table.insert(cmds, m.generateCompileCommand(prj, cfg, node))
     end
   })
   return cmds
@@ -114,9 +113,11 @@ function m.onProject(prj)
     if not cfgCmds[cfgKey] then
       cfgCmds[cfgKey] = {}
     end
+
     cfgCmds[cfgKey] = table.join(cfgCmds[cfgKey], m.getProjectCommands(prj, cfg))
   end
-  for cfgKey,cmds in pairs(cfgCmds) do
+
+  for cfgKey, cmds in pairs(cfgCmds) do
     local outfile = string.format('%s/compile_commands.json', cfgKey)
     p.generate(prj, outfile, function()
       p.push('[')
