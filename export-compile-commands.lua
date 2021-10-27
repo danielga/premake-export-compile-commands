@@ -110,7 +110,7 @@ end
 function m.onProject(prj)
   local cfgCmds = {}
   for cfg in project.eachconfig(prj) do
-    local cfgKey = string.format('%s', cfg.shortname)
+    local cfgKey = string.format('%s/%s', prj.name, cfg.shortname)
     if not cfgCmds[cfgKey] then
       cfgCmds[cfgKey] = {}
     end
