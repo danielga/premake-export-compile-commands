@@ -107,20 +107,18 @@ function m.getProjectCommands(prj, cfg)
   return cmds
 end
 
-function m.onWorkspace(wks)
+function m.onProject(prj)
   local cfgCmds = {}
-  for prj in workspace.eachproject(wks) do
-    for cfg in project.eachconfig(prj) do
-      local cfgKey = string.format('%s', cfg.shortname)
-      if not cfgCmds[cfgKey] then
-        cfgCmds[cfgKey] = {}
-      end
-      cfgCmds[cfgKey] = table.join(cfgCmds[cfgKey], m.getProjectCommands(prj, cfg))
+  for cfg in project.eachconfig(prj) do
+    local cfgKey = string.format('%s', cfg.shortname)
+    if not cfgCmds[cfgKey] then
+      cfgCmds[cfgKey] = {}
     end
+    cfgCmds[cfgKey] = table.join(cfgCmds[cfgKey], m.getProjectCommands(prj, cfg))
   end
   for cfgKey,cmds in pairs(cfgCmds) do
     local outfile = string.format('%s/compile_commands.json', cfgKey)
-    p.generate(wks, outfile, function()
+    p.generate(prj, outfile, function()
       p.push('[')
       for i = 1, #cmds do
         local item = cmds[i]
@@ -142,7 +140,7 @@ end
 newaction {
   trigger = 'export-compile-commands',
   description = 'Export compiler commands in JSON Compilation Database Format',
-  onWorkspace = m.onWorkspace
+  onProject = m.onProject
 }
 
 return m
