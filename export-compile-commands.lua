@@ -78,7 +78,7 @@ function m.generateCompileCommand(prj, cfg, node)
   return {
     directory = prj.location,
     file = node.abspath,
-    command = (path.iscfile(node.abspath) and 'cc ' or 'cxx ') .. table.concat(m.getFileFlags(prj, cfg, node), ' ')
+    command = (path.iscfile(node.abspath) and 'cc ' or 'c++ ') .. table.concat(m.getFileFlags(prj, cfg, node), ' ')
   }
 end
 
