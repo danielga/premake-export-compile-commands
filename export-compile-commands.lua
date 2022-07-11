@@ -15,7 +15,7 @@ function m.getIncludeDirs(cfg)
   for _, dir in ipairs(cfg.includedirs) do
     table.insert(flags, '-I' .. p.quoted(dir))
   end
-  for _, dir in ipairs(cfg.sysincludedirs or {}) do
+  for _, dir in ipairs(cfg.externalincludedirs or {}) do
     table.insert(flags, '-isystem ' .. p.quoted(dir))
   end
   return flags
@@ -46,7 +46,7 @@ function m.getCommonFlags(prj, cfg)
   flags = table.join(flags, m.getStandard(prj))
   flags = table.join(flags, toolset.getdefines(cfg.defines))
   flags = table.join(flags, toolset.getundefines(cfg.undefines))
-  flags = table.join(flags, toolset.getincludedirs(cfg, cfg.includedirs, cfg.sysincludedirs))
+  flags = table.join(flags, toolset.getincludedirs(cfg, cfg.includedirs, cfg.externalincludedirs))
   flags = table.join(flags, toolset.getforceincludes(cfg))
   if project.iscpp(prj) then
     flags = table.join(flags, toolset.getcxxflags(cfg))
