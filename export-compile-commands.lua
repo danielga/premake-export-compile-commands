@@ -120,7 +120,7 @@ function m.onWorkspace(wks)
         p.push('{')
         p.x('"directory": "%s",', item.directory)
         p.x('"file": "%s",', item.file)
-        p.w('"command": "%s"', item.command)
+        p.w('"command": "%s"', item.command:gsub('\\', '\\\\'):gsub('"', '\\"'))
         if i ~= #cmds then
           p.pop('},')
         else
