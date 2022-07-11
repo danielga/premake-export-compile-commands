@@ -28,6 +28,8 @@ function m.getStandard(prj)
       table.insert(flags, "-std=c++11")
     elseif v == "C++14" then
       table.insert(flags, "-std=c++14")
+    elseif v == "C++17" then
+      table.insert(flags, "-std=c++17")
     end
   end
   return flags
